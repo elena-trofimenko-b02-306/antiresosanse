@@ -11,7 +11,7 @@ def draw_start_menu():
     quit_button=font.render('Выйти', True, (255, 255, 255))
     screen.blit(title, (300, 0))
     screen.blit(start_button, (screen_width/2 - start_button.get_width()/2, screen_height/2 + start_button.get_height()/2))
-    screen.blit(quit_button,(screen_width/2 - start_button.get_width()/2, screen_height/2 + start_button.get_height()/2+100))
+    screen.blit(quit_button,(screen_width/2 - start_button.get_width()/2, screen_height/2 + start_button.get_height()/2+99))
     pygame.display.update()
 
 
