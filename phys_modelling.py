@@ -1,44 +1,59 @@
 """Отвечает за физическое моделирование процесса"""
 import pygame
 import numpy as np
+FPS=120
 
 class Spring:
     """Класс, задающий пружину.Пружина имеет жесткость, длину в нерастянутом состоянии и текущую длину
     """
 
     def __init__(self):
-        self.x0 = 1  # длина нерастянутого состояние
-        self.x = 1  # текущая длина, я пока вбила случанйые значения.
-        self.k = 4
+        self.x0 = 150  # длина нерастянутого состояние
+        self.k = 36
 
 
-class Gruz:
+class Gruz_Driven:
     """Класс, задающий груз. У груза есть масса, текущие координата, скорость и ускорение"""
 
     def __init__(self):
         self.m = 1  # масса
-        self.x = 1  # координата x
-        self.v = 0  # проекция скорости на ось x, может быть отрицательной
-        self.a = 0  # проекция ускорения на ось x, может быть отрицательным
-        self.F = 0
-        self.omega_ext = 0
+        self.x = 300  # координата x
+        self.v = 0 # проекция скорости на ось x, может быть отрицательной(Настоящая скорость, деленная на FPS)
+        self.a = 0  # проекция ускорения на ось x, может быть отрицательным (Настоящee acceleration, деленное на FPS)
+        self.ampl = 100
+        self.omega_ext = 6 #настоящая омега
 
     def calc_force_driven(self, time, obj, spring1, spring2):
         """"Функция, вычисляющая суммарную силу, действующую на груз, к которому приложена вынуждающая сила"""
         """Принимает время, амплитуду и частоту вынуждающей силы, а так же данные о втором грузе  пружинах"""
-        self.F = np.cos(self.omega_ext * time)
-        self.F -= spring1.k * (self.x - spring1.x0) + spring2.k * (self.x - obj.x - spring2.x0)
+        self.F = self.ampl*np.cos(self.omega_ext * time)-spring1.k * ((self.x-150) - spring1.x0) + spring2.k * (obj.x -self.x-100-spring2.x0)
 
-    def calc_force_free(self, obj, spring2):
-        """"Функция, вычисляющая суммарную силу, действующую на свободный груз"""
-        self.F = -spring2.k * (self.x - obj.x - spring2.x0)
+        print(self.F)
+
 
     def move(self, dt):
         """Функция, пересчитывающая координаты грузов, принимает минимальный интервал времени"""
         self.a = self.F / self.m
-        self.x += self.v * dt + self.a * dt**2 / 2
-        self.v += self.a * dt
+        self.x += self.v*dt + self.a*dt/ 2
+        self.v += self.a*dt
+
+class Gruz_Free:
+    """Класс, задающий груз. У груза есть масса, текущие координата, скорость и ускорение"""
+
+    def __init__(self):
+        self.m = 1  # масса
+        self.x = 550  # координата x
+        self.v = 0 # проекция скорости на ось x, может быть отрицательной(Настоящая скорость, деленная на FPS)
+        self.a = 0  # проекция ускорения на ось x, может быть отрицательным (Настоящee acceleration, деленное на FPS)
+
+    def calc_force_free(self, obj, spring2):
+        """"Функция, вычисляющая суммарную силу, действующую на свободный груз"""
+        self.F = -spring2.k * (self.x - obj.x-100-spring2.x0)
+
+    def move(self, dt):
+        """Функция, пересчитывающая координаты грузов, принимает минимальный интервал времени"""
+        self.a = self.F / self.m
+        self.x += self.v*dt + self.a*dt/ 2
+        self.v += self.a*dt
 
 
-
-"""Думаю, прописать силы стоит уже в phys_mpdelling.зщкмлжди"""
